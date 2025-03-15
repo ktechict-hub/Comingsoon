@@ -123,9 +123,22 @@
         const minutesDisplay = document.getElementById('minutes');
         const secondsDisplay = document.getElementById('seconds');
 
-        let timeLeft = 20 * 24 * 60 * 60 * 1000;
+        // Retrieve the end date from local storage or set a new one
+        let endDate = localStorage.getItem('endDate');
+
+        if (!endDate) {
+            // Set the end date to 20 days from now if it doesn't exist
+            endDate = new Date();
+            endDate.setDate(endDate.getDate() + 20);
+            localStorage.setItem('endDate', endDate.toISOString()); // Save to local storage
+        } else {
+            endDate = new Date(endDate); // Convert stored string back to Date object
+        }
 
         function updateCountdown() {
+            const now = new Date();
+            const timeLeft = endDate - now;
+
             const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
             const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
@@ -136,11 +149,10 @@
             minutesDisplay.textContent = minutes.toString().padStart(2, '0');
             secondsDisplay.textContent = seconds.toString().padStart(2, '0');
 
-            timeLeft -= 1000;
-
             if (timeLeft < 0) {
                 clearInterval(countdownInterval);
                 countdownDisplay.innerHTML = "<h1>We're Live!</h1>";
+                localStorage.removeItem('endDate'); // Clear the end date from local storage
             }
         }
 
@@ -148,5 +160,4 @@
         const countdownInterval = setInterval(updateCountdown, 1000);
     </script>
 </body>
-</html>
 </html>
